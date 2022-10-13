@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Path to where the installers live
+
+cd /private/var/tmp/figma
+
+# Determine if device is Intel or Apple Silicon
+
+arch=$(/usr/bin/arch)
+if [ "$arch" == "arm64" ]; then
+    sudo installer -package Figma_114.6.1_M1.pkg -target /
+elif [ "$arch" == "i386" ]; then
+	sudo installer -package Figma_114.6.1_Intel.pkg -target /
+else
+    echo "Unknown Architecture"
+fi
