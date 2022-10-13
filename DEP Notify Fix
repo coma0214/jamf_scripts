@@ -1,0 +1,7 @@
+#!/bin/zsh
+#Fix for DEP Notify not launching
+
+rm /var/tmp/com.arekdreyer.DEPNotify-prestarter-installer.zsh.err
+rm /var/tmp/com.arekdreyer.DEPNotify-prestarter-installer.zsh.out
+rm /var/tmp/depnotify.log
+rm /var/tmp/depnotifyDebug.log
