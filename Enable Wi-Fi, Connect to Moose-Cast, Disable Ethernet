@@ -1,0 +1,6 @@
+networksetup -setairportpower Wi-Fi On
+networksetup -setnetworkserviceenabled Wi-Fi On
+networksetup -setairportnetwork en1 Moose-Cast clockyellowroutejudge
+sleep 10
+networksetup -ordernetworkservices Wi-Fi Ethernet "Thunderbolt Bridge" "Bluetooth PAN"
+ifconfig en0 down
