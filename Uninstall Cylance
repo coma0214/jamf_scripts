@@ -1,0 +1,1 @@
+sudo /Applications/Cylance/Uninstall\ CylancePROTECT.app/Contents/MacOS/Uninstall\ CylancePROTECT --password='8SYKVAbp3BbJzBwsN895)' --noui || echo 'true'
