@@ -1,0 +1,3 @@
+sudo cp /System/Library/Extensions/IOUSBMassstorageClass.kext ~/backup/
+sudo rm -rf /System/Library/Extensions/IOUSBMassStorageClass.kext
+sudo touch /System/Library/Extensions
