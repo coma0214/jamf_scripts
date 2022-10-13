@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sudo /usr/local/bin/amagent --setkey 6b9e1abc-3e44-4688-be04-dd218653d399
+sudo launchctl load /Library/LaunchDaemons/com.automox.agent.plist
+
+exit 0
