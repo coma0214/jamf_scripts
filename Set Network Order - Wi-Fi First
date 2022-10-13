@@ -1,0 +1,1 @@
+networksetup -ordernetworkservices Wi-Fi Ethernet "Thunderbolt Bridge" "Bluetooth PAN"
