@@ -1,0 +1,18 @@
+#!/bin/bash
+
+PreferredMenuExtras=(
+"/System/Library/CoreServices/Menu Extras/Bluetooth.menu"
+"/System/Library/CoreServices/Menu Extras/Volume.menu"
+)
+
+currentUser=$( ls -l /dev/console | awk '{print $3}' )
+userHome=$( dscl . read /Users/$currentUser NFSHomeDirectory | awk '{print $NF}' )
+
+MenuExtras=$( defaults read "$userHome/Library/Preferences/com.apple.systemuiserver.plist" menuExtras | awk -F'"' '{print $2}' )
+
+for menuExtra in "${PreferredMenuExtras[@]}"; do
+    menuShortName=$( echo "${menuExtra}" | awk -F'/' '{print $NF}' )
+    if [[ $( echo "${MenuExtras}" | grep "${menuExtra}" ) ]]; then
+        echo "Menu Extra \"${menuShortName}\" present"
+    fi
+done
