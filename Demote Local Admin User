@@ -1,0 +1,8 @@
+#!/bin/bash
+#Description: Script to demote local admin accounts except yourlocaladmin
+
+loggedInUser=$(/usr/sbin/scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ && ! /loginwindow/ {print $3}')
+
+/usr/sbin/dseditgroup -o edit -d "$loggedInUser" -t user admin
+
+echo "$loggedInUser"
