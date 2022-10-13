@@ -1,0 +1,12 @@
+#!/bin/sh
+
+tempFile=/tmp/.32bitApps_unsorted.txt
+outputFile=/Library/rapid7/SearchResults/32bitApps.txt
+
+# Create list
+/usr/sbin/system_profiler SPApplicationsDataType | grep -B 6 -A 2 "(Intel): No" | grep "Location:" | sed -e 's/^[ \t]*//' | sed -e 's/Location\: //g' > $tempFile
+
+# Sort list
+/usr/bin/sort $tempFile > $outputFile
+
+exit 0
