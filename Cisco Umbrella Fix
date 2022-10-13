@@ -1,0 +1,28 @@
+#!/bin/bash
+
+killall -HUP mDNSResponder
+dscacheutil -flushcache
+killall -HUP mDNSResponder
+
+sleep 5
+
+rm -rf /opt/cisco/anyconnect/umbrella/data/mergedlocaldomains
+rm -rf /opt/cisco/anyconnect/umbrella/data/OrgInfo.json
+rm -rf /opt/cisco/anyconnect/umbrella/data/sync-latest.plist
+rm -rf /opt/cisco/anyconnect/umbrella/data/Updater.plist
+rm -rf /opt/cisco/anyconnect/umbrella/erc_state.plist
+rm -rf /opt/cisco/anyconnect/umbrella/OrgInfo.json
+rm -rf /opt/cisco/anyconnect/umbrella/resolv.conf
+rm -rf /opt/cisco/anyconnect/umbrella/SWG/SWGConfig.json
+
+killall acumbrellaagent
+
+touch /opt/cisco/anyconnect/umbrella/OrgInfo.json
+
+tee -a /opt/cisco/anyconnect/umbrella/OrgInfo.json << END
+{
+	"organizationId" : "2585844",
+	"fingerprint" : "684709d9424d182f39bc5821ea734791",
+	"userId" : "10587282"
+}
+END
