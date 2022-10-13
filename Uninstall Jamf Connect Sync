@@ -1,0 +1,27 @@
+#Jamf Connect Sync Verification and Removal
+
+logfile="/Library/Logs/JamfConnectUninstall"
+
+if [[ -e "/Applications/Jamf Connect Sync.app" ]]; then
+	JCSyncVersion=`/usr/bin/defaults read '/Applications/Jamf Connect Sync.app/Contents/Info' CFBundleShortVersionString`
+	#Verify Jamf Connect SyncVersion
+	/bin/echo "`date`: Current Version of Jamf Connect Sync: ${JCSyncVersion}" >> ${logfile}
+	/bin/sleep 5
+
+	#Remove Jamf Connect Sync
+	/bin/rm -rf '/Applications/Jamf Connect Sync.app'
+	/bin/echo "`date`: Successfully Removed Jamf Connect Sync" >> ${logfile}
+
+	#Remove Jamf Connect Sync Launch Agent
+	/bin/rm -rf '/Library/LaunchAgents/com.jamf.connect.sync.plist'
+	/bin/echo "`date`: Successfully Removed Jamf Connect Sync Launch Agent" >> ${logfile}
+
+	#Kill Jamf Connect Sync Application
+	pkill "Jamf Connect Sync"
+	/bin/echo "`date`: Killing Application: Jamf Connect Sync" >> ${logfile}
+	/bin/sleep 5
+	exit 0
+else
+	/bin/echo "`date`: Jamf Connect Sync not installed. Exiting" >> ${logfile}
+	exit 1
+fi
