@@ -1,0 +1,36 @@
+!/bin/bash
+
+#NoMAD Plus / Jamf Connect Login Okta preferences file creation.
+#Writes a NoMAD+ Login preferences file.
+
+#Argument 4 Address of your Okta server.  Example is dev-1234.oktapreview.com
+#Argument 5 Fully qualified path to background image for CheckOkta window
+
+
+TheURLOfYourOktaServer=$4
+LocalPasswordSyncMessage=$5
+
+#AuthServer - Set the Okta domain you want to authenticate against
+defaults write /Library/Preferences/menu.nomad.NoMADPro.plist AuthServer -string "$TheURLOfYourOktaServer"
+
+#CreateAdminUser - Makes the new users on the machine an Admin
+defaults write /Library/Preferences/menu.nomad.NoMADPro.plist ActionsUpdateTime -Number 15
+
+#LoginLogo - Path to an image to use for the logo at login
+defaults write /Library/Preferences/menu.nomad.NoMADPro.plist DontShowWelcome -Boolean TRUE
+
+#BackgroundImage - Path to an image to use for the background of the CheckOkta mechanism.
+defaults write /Library/Preferences/menu.nomad.NoMADPro.plist ExpirationWarningDays -Number 90
+
+#BackgroundImage - Path to an image to use for the background of the CheckOkta mechanism.
+defaults write /Library/Preferences/menu.nomad.NoMADPro.plist LocalPasswordSync -Boolean True
+
+#BackgroundImage - Path to an image to use for the background of the CheckOkta mechanism.
+defaults write /Library/Preferences/menu.nomad.NoMADPro.plist LocalPasswordSyncMessage -string "$LocalPasswordSyncMessage"
+
+#BackgroundImage - Path to an image to use for the background of the CheckOkta mechanism.
+defaults write /Library/Preferences/menu.nomad.NoMADPro.plist WarnOnPasswordExpiration -Boolean True
+
+exit 0
+
+
