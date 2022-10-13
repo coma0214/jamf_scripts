@@ -1,0 +1,21 @@
+!/bin/bash
+/usr/local/bin/dockutil --add /Applications/Self\ Service.app --position 2 --allhomes
+/usr/local/bin/dockutil --move 'App Store' --position 3 --allhomes
+/usr/local/bin/dockutil --add /Applications/Google\ Chrome.app --position 4 --allhomes
+/usr/local/bin/dockutil --add /Applications/Slack.app --position 5 --allhomes
+/usr/local/bin/dockutil --add /Applications/zoom.us.app --position 6 --allhomes
+/usr/local/bin/dockutil --add /Applications/Google\ Drive\ File\ Stream.app --position 7 --allhomes
+/usr/local/bin/dockutil --move 'Calendar'--postion 8 --allhomes
+/usr/local/bin/dockutil --move 'Notes'--postion 9 --allhomes
+/usr/local/bin/dockutil --move 'Messages'--postion 10 --allhomes
+/usr/local/bin/dockutil --move /Applications/System\ Preferences.app  --position 11 --allhomes
+
+/usr/local/bin/dockutil --remove 'Safari' --allhomes
+/usr/local/bin/dockutil --remove 'Mail' --allhomes
+/usr/local/bin/dockutil --remove 'Contacts' --allhomes
+/usr/local/bin/dockutil --remove 'iBooks' --allhomes
+/usr/local/bin/dockutil --remove 'Maps' --allhomes
+/usr/local/bin/dockutil --remove 'Siri' --allhomes
+/usr/local/bin/dockutil --remove 'Photos' --allhomes
+/usr/local/bin/dockutil --remove 'FaceTime' --allhomes
+/usr/local/bin/dockutil --remove 'iTunes' --allhomes
