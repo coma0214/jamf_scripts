@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/osascript -e 'tell application "Self Service" to display dialog "No macOS updates available." buttons {"Okay"} with icon caution giving up after 120'
