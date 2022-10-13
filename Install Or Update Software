@@ -1,0 +1,155 @@
+#!/bin/zsh
+#
+# Created Aug 26 2020 by J Samuel Clark
+# - Downloads a DMG file to extract an app or PKG and install on the user's computer
+#
+# Updated Oct 21 2020 by J Samuel Clark
+# - Added support to quit application before installing
+#
+# Updated Mar 11 2021 by J Samuel Clark
+# - Added support to verify retry download upon failure
+# 
+########################################################################
+# About this program
+#
+# Variables which must be defined in Jamf Pro 
+#
+# "$4" Represents the URL from where the DMG will be downloaded
+# "$5" Represents what the DMG will be named after being downloaded
+# "$6" The exact name of a .app file within the downloaded DMG
+# "$7" The exact name of a .pkg within the downloaded DMG
+#  
+# NOTE: A parameter must be set in either "$6" OR "$7", the script will
+# fail otherwise. Enjoy!
+#
+########################################################################
+# Defining variables - DO NOT MODIFY
+########################################################################
+downloadUrl="$4"	# The URL must return a file
+dmgName="$5"	# The name of the file after it's downloaded
+appName="$6"	# Name of the .app file within the DMG
+pkgName="$7"	# Name of the .pkg file within the DMG
+downloadLocation="/private/tmp"		# Where the file gets downloaded
+applicationDmg="${downloadLocation}/${dmgName}"	# The location and name of the downloaded file
+mountPoint="/Volumes/${dmgName}"
+loggedInUser=$(/usr/bin/stat -f%Su /dev/console)
+
+# Preliminary checks
+if [[ -n "${appName}" ]] && [[ -z "${pkgName}" ]]; then 	
+	installApp="$6"
+elif [[ -n "${pkgName}" ]] && [[ -z "${appName}" ]]; then
+	installApp="$7"
+elif [[ -z "${appName}" ]] && [[ -z "${pkgName}" ]]; then
+	echo "Nothing found in parameters, exiting"
+	exit 1
+elif [[ -n "${appName}" ]] && [[ -n "${pkgName}" ]]; then 
+	echo "Too many parameters set, exiting"
+	exit 1
+fi
+
+function downloadAndMount() {
+# Attempt to download and mount DMG up to 3 times
+	local TRY=1
+	local downloadSuccessful=1
+	while [[ ${downloadSuccessful} -ne 0 ]] && [[ ${TRY} -le 3 ]]; do
+		#Remove old download if present
+		if [[ -a "${applicationDmg}" ]]; then
+			/bin/rm "${applicationDmg}"
+		fi
+
+		#Download application
+		echo "Downloading ${appName}, attempt ${TRY}"
+		/usr/bin/curl -sL "${downloadUrl}" -o "${applicationDmg}"
+
+		#Attempt to mount
+		/usr/bin/hdiutil attach "${applicationDmg}" -mountpoint "${mountPoint}" -nobrowse
+		
+		#Verify download integrity
+		local downloadSuccessful=$(/bin/ls "${mountPoint}" | grep "${appName}" &>/dev/null; echo $?)
+		
+		#Check download contents
+		if [[ ${downloadSuccessful} == "0" ]]; then
+			echo "Application downloaded successfully, installing"
+			return
+		else
+			#Add to counter
+			(( TRY++ ))
+			if [[ ${TRY} -le "2" ]]; then
+				echo "Application ${appName} invalid on attempt ${TRY}, trying again"
+				/usr/bin/hdiutil detach "${mountPoint}"
+			elif [[ ${TRY} -eq "3" ]]; then
+				echo "Attempting one last time to download ${appName}"
+				/usr/bin/hdiutil detach "${mountPoint}"
+			else 
+				continue
+			fi
+		fi
+		
+	done
+
+	echo "Download failed, exiting with error code 1"
+	/bin/rm "${applicationDmg}"
+	exit 1
+	
+}
+
+########################################################################
+# Begin program - HOLD ONTO BUTTS
+########################################################################
+# Download and attempt to mount DMG
+downloadAndMount
+
+# Choose which installation to run
+installType=$( echo "$installApp" | cut -d '.' -f2 )
+case "${installType}" in
+	app )
+		# Killing and copying .app to /Applications folder
+		killApp=$(echo "$installApp" | cut -d '.' -f1 )
+		if [[ -n $(pgrep "${killApp}") ]]; then
+			echo "Killing process ${killApp}"
+			/usr/bin/killall "${killApp}"
+		fi
+
+		echo "Copying ${appName} to Applications folder"
+
+		#Remove old instance of application
+		if [[ -a "/Applications/${appName}" ]]; then
+			echo "Removing old instance of ${appName}"
+			/bin/rm -r "/Applications/${appName}"
+		fi
+
+		#Checking if user is admin or standard and setting permissions
+		if [[ -n $(id -Gn "${loggedInUser}" | grep "admin") ]]; then
+			echo "Installing app with admin rights"
+			/bin/cp -pR "${mountPoint}/${appName}" "/Applications"
+        	/bin/chmod 755 "/Applications/${appName}"
+        	/usr/sbin/chown -R root:wheel "/Applications/${appName}"
+
+        else
+        	echo "Installing ${appName} with rights for standard user"
+        	/bin/cp -pR "${mountPoint}/${appName}" "/Applications"
+        	/bin/chmod 755 "/Applications/${appName}"
+        	/usr/sbin/chown -R "${loggedInUser}":wheel "/Applications/${appName}"
+
+        fi
+		;;
+
+	pkg )
+		# Installing .pkg within DMG to /
+		echo "Installing ${pkgName}"
+		installer -pkg "${mountPoint}/${pkgName}" -target /
+		;;
+	* )
+		echo "Nothing to install"
+		;;
+
+esac
+
+# Cleanup
+/usr/bin/hdiutil detach "${mountPoint}" -force
+/bin/rm "${applicationDmg}"
+
+# Launch App For User
+open -a "/Applications/$appName"
+
+exit $?
