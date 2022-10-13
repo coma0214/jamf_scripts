@@ -1,0 +1,5 @@
+networksetup -setnetworkserviceenabled Wi-Fi off
+networksetup -setnetworkserviceenabled “Bluetooth PAN” off
+networksetup -setnetworkserviceenabled “USB 10/100/1000 LAN” off
+networksetup -setnetworkserviceenabled “Thunderbolt Ethernet” off
+networksetup -setnetworkserviceenabled “Belkin USB-C LAN” off
