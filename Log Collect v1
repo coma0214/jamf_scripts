@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# log collector
+
+currentuser=$(scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ && ! /loginwindow/ { print $3 }')
+logdir="/Users/${currentuser}/Desktop/logs"
+
+logs_to_collect=(
+/var/log/jamf.log
+/var/log/system.log
+/var/log/install.log
+)
+
+mkdir "${logdir}"
+
+for log in "${logs_to_collect[@]}" ; do
+    echo $log
+   cp "${log}" "${logdir}"
+done
+
+zip "${logdir}.zip" "${logdir}"
