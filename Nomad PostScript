@@ -1,0 +1,47 @@
+!/bin/bash
+
+#NoMAD Plus / Jamf Connect Login Okta preferences file creation.
+#Writes a NoMAD+ Login preferences file.
+
+#Argument 4 Address of your Okta server.  Example is dev-1234.oktapreview.com
+#Argument 5 Fully qualified path to background image for CheckOkta window
+#Argument 6 Fully qualified path to login logo image
+#Argument 7 Fully qualified path to reset password page
+
+#Usage:     Use as a script in Jamf Pro to set the preferences file after you've installed the Jamf Connect Login package
+#Rev:        1.0 — SRABBITT September 27, 2018 9:43 AM
+
+TheURLOfYourOktaServer=$4
+pathToBackgroundImage=$5
+pathToLogo=$6
+TheURLofYourResetPasswordPage=$7
+
+
+#AuthServer - Set the Okta domain you want to authenticate against
+defaults write /Library/Preferences/menu.nomad.login.okta.plist AuthServer -string "$TheURLOfYourOktaServer"
+
+#LoginLogo - Path to an image to use for the logo at login
+defaults write /Library/Preferences/menu.nomad.login.okta.plist LoginLogo -string "$pathToLogo"
+
+#BackgroundImage - Path to an image to use for the background of the CheckOkta mechanism.
+defaults write /Library/Preferences/menu.nomad.login.okta.plist BackgroundImage -string "$pathToBackgroundImage"
+
+#DenyLocal - Determines if all users must authenticate to Okta. When using this setting no local authentication is done.
+defaults write /Library/Preferences/menu.nomad.login.okta.plist DenyLocal -bool False
+
+#LocalFallback - Used with DenyLocal to force authentication to Okta first, but then fallback to local auth if Okta is unavailable
+defaults write /Library/Preferences/menu.nomad.login.okta.plist LocalFallback -bool True
+
+#HelpURL - Path to an image to use for the logo at login
+defaults write /Library/Preferences/menu.nomad.login.okta.plist HelpURL -string "$TheURLofYourResetPasswordPage"
+
+#OIDCAccessClientID - OIDC application to use for access to the Mac.
+defaults write /Library/Preferences/menu.nomad.login.okta.plist OIDCAccessClientID -string "0oa1h3g01t1IwLftC0h8"
+
+#OIDCAdminClientID - OIDC application to use to determine who is an admin when a local account is created.
+defaults write /Library/Preferences/menu.nomad.login.okta.plist OIDCAdminClientID -string "0oa1h3g1d3xUWWz5l0h8"
+
+# Kill loginwindow process to force NoMAD Login to launch
+sudo killall loginwindow
+
+exit 0
