@@ -1,0 +1,7 @@
+#!/bin/sh
+
+currentUser=`ls -l /dev/console | cut -d " " -f4`
+
+sudo -u $currentUser defaults write com.apple.menuextra.battery ShowPercent YES
+
+sudo -u $currentUser killall SystemUIServer
