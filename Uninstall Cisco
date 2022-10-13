@@ -1,0 +1,32 @@
+#!/bin/bash
+# Written lamador Sep 18, 2020
+# PURPOSE: Remove All Cisco Anyconnect Modules
+#          Remove cisco install folder
+#          Meant to be used with self service
+#          In the future use this script to initiate the re-install as well
+
+
+## Get the user
+consoleUser=`ls -l /dev/console | cut -d " " -f4`
+
+#####################################################
+##### Uninstall AnyConnect Client and Modules #######
+#####################################################
+su "${consoleuser}" -c /opt/cisco/anyconnect/bin/vpn_uninstall.sh
+/opt/cisco/anyconnect/bin/umbrella_uninstall.sh
+/opt/cisco/anyconnect/bin/dart_uninstall.sh
+/opt/cisco/anyconnect/bin/iseposture_uninstall.sh
+
+#################################
+##### Remove Install Folder #####
+#################################
+rm -rf /opt/cisco
+##########################################################
+##### Remove Receipt Files #####
+##########################################################
+rm -rf /private/var/db/receipts/anyconnect-4.10.*.bom
+rm -rf /private/var/db/receipts/anyconnect-4.10.*.plist
+##########################################################
+##### Remove Preference Files #####
+##########################################################
+rm /Users/$MyUser/Library/Preferences/com.cisco.anyconnect.gui.plistd
