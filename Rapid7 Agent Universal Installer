@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# set the $TERM variable to determine the current terminal 
+
+export TERM=xterm-256color
+
+# Path to where the installers live
+
+cd /private/var/tmp/r7agent
+
+# Determine if device is Intel or Apple Silicon
+
+arch=$(/usr/bin/arch)
+if [ "$arch" == "arm64" ]; then
+    chmod u+x agent_installer-arm64.sh
+    ./agent_installer-arm64.sh install_start --token us:5082b6b7-78ba-4945-997d-3ccd0fb5cc93
+elif [ "$arch" == "i386" ]; then
+    chmod u+x agent_installer-x86_64.sh
+    ./agent_installer-x86_64.sh reinstall_start --token us:5082b6b7-78ba-4945-997d-3ccd0fb5cc93
+else
+    echo "Unknown Architecture"
+fi
