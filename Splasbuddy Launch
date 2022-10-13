@@ -1,0 +1,31 @@
+#!/bin/bash
+
+while true
+do
+loggedinuser=$(/bin/ls -l /dev/console | /usr/bin/awk '{ print $3 }')
+echo $loggedinuser
+    if [ "${loggedinuser}" == "root" ] || [ "${loggedinuser}" == "_mbsetupuser" ]; then
+    echo "is root or mbsetupuser"
+    sleep 10
+    else
+    echo "is local user"
+    break
+    fi
+done
+
+# Trigger Jamf Policies in specific order
+
+caffeinate -d -i -m -u &
+caffeinatepid=$!
+
+/usr/local/jamf/bin/jamf policy -event launch_login
+/usr/local/jamf/bin/jamf policy -event launch_settings
+/usr/local/jamf/bin/jamf policy -event launch_zoom
+/usr/local/jamf/bin/jamf policy -event launch_googlestream
+/usr/local/jamf/bin/jamf policy -event launch_chrome
+/usr/local/jamf/bin/jamf policy -event launch_slack
+/usr/local/jamf/bin/jamf policy -event launch_dock
+/usr/local/jamf/bin/jamf policy -event launch_crashplan
+/usr/local/jamf/bin/jamf policy -event launch_cleanup
+
+kill "$caffeinatepid"
