@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ -e "/Applications/Install macOS Monterey.app" ];
+
+then 
+
+echo "Installer Found. Running Script Only"
+
+sudo jamf policy -event r7montereyscript -verbose
+
+else
+
+echo "Installer Does Not Exists. Running Full Policy" 
+
+sudo jamf policy -event r7montereyfull -verbose
+
+fi
