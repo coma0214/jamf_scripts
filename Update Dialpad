@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Identify the name of the app
+APP_NAME="Dialpad.app"
+
+#Kill Running Application
+pkill Dialpad*
+
+#install update
+sudo installer -pkg "/Library/Application Support/JAMF/Waiting Room/Dialpad_19.7.1.pkg" -target /
+
+#open the app for the user
+open -a "/Applications/Dialpad.app"
+
+exit 0
