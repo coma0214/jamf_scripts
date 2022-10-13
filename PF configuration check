@@ -1,0 +1,25 @@
+#!/bin/bash
+## Get last line of the configuration file
+anchor=$(tail -n 1 /etc/pf.conf)
+
+if [ "$anchor" != "load anchor \"smb.block.out\" from \"/etc/pf.anchors/smb.block.out\"" ];
+  then
+    # Remove any existing anchor file
+    sudo rm -rf /etc/pf.anchors/smb.block.out
+    # Create the anchor file and write to it
+    sudo touch /etc/pf.anchors/smb.block.out
+    echo "deny_ports = \"{ 88, 135, 137, 139, 445 }\"" | sudo tee -a /etc/pf.anchors/smb.block.out
+    echo "rfc_1918 = \"{ 127.0.0.0/8 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 169.254.0.0/16 192.0.2.0/24 0.0.0.0/8 240.0.0.0/4 255.255.255.255/32 }\"" | sudo tee -a /etc/pf.anchors/smb.block.out
+    echo "pass out quick proto { tcp, udp } from any to \$rfc_1918 port \$deny_ports" | sudo tee -a /etc/pf.anchors/smb.block.out
+    echo "block drop out proto { tcp, udp } from any to any port \$deny_ports" | sudo tee -a /etc/pf.anchors/smb.block.out
+    sudo cat /etc/pf.anchors/smb.block.out
+
+    # Add the anchor to the default config, but remove any trace of it first so it always at the bottom
+    sed -i '' '/load anchor \"smb.block.out\" from \"\/etc\/pf.anchors\/smb.block.out\"/d' /etc/pf.conf
+    sed -i '' '/anchor smb.block.out/d' /etc/pf.conf
+    echo "anchor smb.block.out" | sudo tee -a /etc/pf.conf
+    echo "load anchor \"smb.block.out\" from \"/etc/pf.anchors/smb.block.out\"" | sudo tee -a /etc/pf.conf
+
+    # Reload pf
+    sudo pfctl -f /etc/pf.conf
+fi
