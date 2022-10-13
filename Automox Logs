@@ -1,0 +1,86 @@
+#!/bin/bash
+MyUser=$(ls -l /dev/console | cut -d " " -f4)
+echo "
+
+
+"
+echo "###########################"
+    echo "Making Log Directoy..."
+	mkdir "/Users/$MyUser/Automox"
+    echo "Folder Created"
+echo "##########################"
+echo "
+
+"
+echo "###########################"
+    echo "Running auwxww command..."
+	ps auxww > "/Users/$MyUser/Automox/auwxww.txt"
+    echo "File auwxww.txt created"
+echo "##########################"
+echo "
+
+"
+echo "###########################"
+    echo "Running pmset command..."
+	pmset -g log | grep sleep > "/Users/$MyUser/Automox/pmset.txt"
+    echo "File sleep.txt created"
+echo "##########################"
+echo "
+
+"
+echo "###########################"
+    echo "Grabbing System Logs..."
+	find /private/var/log -type f -name "system.*" -exec cp {} "/Users/$MyUser/Automox" \;
+    echo "System Logs Copied"
+echo "##########################"
+echo "
+
+"
+echo "###########################"
+    echo "Runing Sysdiagnose..."
+	/usr/bin/sysdiagnose -u &
+    process_id=$!
+    echo "PID: $process_id"
+    wait $process_id
+   echo "Sysdiagnose Completed: $?"
+    echo "Unzipping tar file..."
+    cd /private/var/tmp/
+    tar -zxvf sysdiagnose_*.tar.gz
+    process_id=$!
+    echo "PID: $process_id"
+    wait $process_id
+    echo "Sysdiagnose extracted"
+    sleep 15
+    echo "Moving spindump.txt to Automox..."
+    cp sysdiagnose*/spindump.txt "/Users/$MyUser/Automox"
+    echo "spindump.txt Copied"
+echo "##########################"
+echo "
+
+"
+echo "###########################"
+    echo "Grabbing Automox Logs..."
+	cp -p "/private/var/log/amagent/amagent.log" "/Users/$MyUser/Automox/"
+    echo "Grabbed amagent.log"
+echo "##########################"
+echo "
+
+"
+echo "###########################"
+    echo "Zipping Automox folder..."
+    cd /Users/$MyUser
+	zip -r -X automoxlogs.zip Automox
+    echo "Zip File Created"
+echo "##########################"
+echo "
+
+"
+echo "###########################"
+    echo "Removing Automox folder..."
+	rm -rf "/Users/$MyUser/Automox"
+    echo "Folder Removed"
+echo "##########################"
+echo "
+
+"
+exit 0
