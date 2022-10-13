@@ -1,0 +1,31 @@
+#!/bin/sh
+################################################################################
+#  ABOUT THIS PROGRAM
+#
+#  NAME
+#    InstallGoogleFileStream.sh
+#
+#  SYNOPSIS
+#    ./InstallGoogleFileStream.sh
+#
+#  DESCRIPTION
+#    Downloads latest version of File Stream from Google's servers and installs
+#    it for the current user. If Google Drive is detected, the application is
+#    stopped and deleted, but user data is not. If data is found, a
+#    notification is displayed through JAMF helper.
+################################################################################
+# Set some Variables
+dmgfile="GoogleDriveFileStream.dmg"
+logfile="/Library/Logs/GoogleFileStreamInstallScript.log"
+url="https://dl.google.com/drive-file-stream/GoogleDriveFileStream.dmg"
+user=`ls -l /dev/console | cut -d " " -f 4`
+
+# Download All the Things
+/bin/echo "`date`: Downloading the latest version of File Stream from Google's servers" >> ${logfile}
+/usr/bin/curl -k -o /var/tmp/$dmgfile $url
+/bin/echo "`date`: Mounting dmg file." >> ${logfile}
+/usr/bin/hdiutil attach /var/tmp/$dmgfile
+
+# Install the things. 
+/bin/echo "`date`: Installing pkg" >> ${logfile}
+/usr/sbin/installer -pkg /Volumes/Install\ Google\ Drive\ File\ Stream/GoogleDriveFileStream.pkg -target /; hdiutil unmount /Volumes/Install\ Google\ Drive\ File\ Stream/
