@@ -1,0 +1,5 @@
+#!/bin/sh
+
+
+sudo echo eyJ1cmwiOiAiaHR0cHM6Ly91c2VhMS0wMTIuc2VudGluZWxvbmUubmV0IiwgInNpdGVfa2V5IjogImdfZjIzMTZiOTI5NWFmODJhZSJ9 > /Library/Application\ Support/JAMF/Waiting\ Room/com.sentinelone.registration-token || echo 'true'
+sudo /usr/sbin/installer -pkg /Library/Application\ Support/JAMF/Waiting\ Room/SentinelAgent_macos_v4_3_3_3512.pkg -target / || echo 'true'
