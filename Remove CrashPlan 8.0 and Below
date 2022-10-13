@@ -1,0 +1,12 @@
+#!/bin/bash
+
+sudo launchctl unload /Library/LaunchDaemons/com.crashplan.engine.plist
+sudo chflags noschg /Applications/CrashPlan.app
+sudo chmod -R 755 "/Library/Application Support/CrashPlan/" 
+
+
+rm /Library/LaunchDaemons/com.code42.service.plist
+rm -rf /Library/LaunchDaemons/com.crashplan.engine.plist
+rm -rf /Applications/CrashPlan.app
+rm -rf /Library/Caches/CrashPlan/
+rm -rf /Library/Application Support/CrashPlan/
