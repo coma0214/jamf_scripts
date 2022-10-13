@@ -1,0 +1,8 @@
+#!/bin/bash
+
+assimilate_ownership() {
+  echo "=> Assimilate ownership on '/Applications/Slack.app'"
+  chown -R $(scutil <<< "show State:/Users/ConsoleUser" | awk -F': ' '/[[:space:]]+Name[[:space:]]:/ { if ( $2 != "loginwindow" ) { print $2 }}'):staff "/Applications/Slack.app"
+}
+
+fi
