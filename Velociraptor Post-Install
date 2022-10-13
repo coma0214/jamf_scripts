@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd /private/tmp/velociraptor
+
+./velociraptor-v0.6.0-darwin-amd64 --config client.config.yaml service install
+
+exit 0
