@@ -1,0 +1,12 @@
+#!/bin/bash
+#remove automox and reinstall
+
+sudo launchctl unload /Library/LaunchDaemons/com.automox.agent.plist
+
+sudo /usr/local/bin/amagent --deregister
+
+sudo rm -f /usr/local/bin/amagent 
+
+sudo rm -rf "/Library/Application Support/Automox/"
+
+exit 0
