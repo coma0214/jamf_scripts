@@ -1,0 +1,39 @@
+#!/bin/bash
+#lamador 03-28-222
+
+INTEL_PKG_NAME="$4"
+M1_PKG_NAME="$5"
+## ex Intel: Code42_8.8.4_1525200006884_17_Mac-x86-64.dmg
+## ex M1: Code42_8.8.4_1525200006884_17_Mac-arm64.dmg
+
+#Make Deployment Properties Configuration File
+mkdir -p /Library/Application\ Support/CrashPlan
+echo "DEPLOYMENT_URL=https://console.us2.code42.com
+DEPLOYMENT_POLICY_TOKEN=defe15bf-d455-455a-8bb1-07fc8036e8f1
+CP_SILENT=true
+DEVICE_CLOAKED=false" > /Library/Application\ Support/CrashPlan/deploy.properties
+
+# Path to where the installers live
+cd /private/var/tmp/code42
+
+# Determine if device is Intel or Apple Silicon
+arch=$(/usr/bin/arch)
+if [ "$arch" == "arm64" ]; then
+/usr/sbin/softwareupdate --install-rosetta --agree-to-license
+sudo hdiutil attach "${M1_PKG_NAME}"
+sudo installer -package /Volumes/Code42/Install\ Code42.pkg -target /
+
+# Let things settle down
+sleep 5
+hdiutil detach /Volumes/Code42
+
+elif [ "$arch" == "i386" ]; then
+
+sudo hdiutil attach "${INTEL_PKG_NAME}"
+sudo installer -package /Volumes/Code42/Install\ Code42.pkg -target /
+
+# Let things settle down
+sleep 5
+hdiutil detach /Volumes/Code42
+
+fi
