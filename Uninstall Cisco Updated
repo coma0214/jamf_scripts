@@ -1,0 +1,95 @@
+#!/bin/bash
+#AnyConnect MFA Prep
+#Remove old configuration data and binaries
+#from Umbrella client and existing VPN agent
+#installations
+
+
+##UPDATE dmgName FOR NEW VERSIONS OF ANYCONNECT##
+ciscoDir="/opt/cisco"
+dmgName="anyconnect-macos-4.10.02086-predeploy-k9.dmg"
+waitRoom="/Library/Application Support/JAMF/Waiting Room"
+#remove anyconnect and all of its components first#
+#checking for anyconnect install#
+echo "
+
+
+"
+echo "###########################"
+if [[ -d $ciscoDir/anyconnect/bin ]]; 
+then
+    echo "Anyconnect Directory found"
+    echo "Calling uninstall script"
+    sudo "$ciscoDir/anyconnect/bin/anyconnect_uninstall.sh"
+    echo "completed anydirect removal"
+else
+    echo "No $ciscoDir/anyconnect directory found"
+fi
+echo "
+"
+echo "##########################"
+echo "
+
+
+"
+echo "##########################"
+if [[ -d "/Applications/OpenDNS Roaming Client/" ]]; then
+    echo "Found Umbrella client, calling uninstaller"
+    sudo "/Applications/OpenDNS Roaming Client/rcuninstall"
+else
+    echo "Roaming Client Not Found"
+fi
+echo "##########################
+"
+
+
+echo "
+
+
+"
+echo "##########################
+"
+if [[ -d "$ciscoDir/anyconnect/bin/umbrella_uninstall.sh" ]]; then
+    echo "Found umbrella plugin remnants...calling uninstall script"
+    sudo "$ciscoDir/anyconnect/bin/umbrella_uninstall.sh"
+    echo "Script complete
+"
+else
+    echo "Nothing found for Umbrella plugin
+"
+fi
+echo "##########################"
+
+#check for remnants of anyconnect directory"
+
+if [[ -d "$ciscoDir/anyconnect" ]]; then
+    rm -rf "$ciscoDir/anyconnect/"
+else
+    echo "no remnants of the anyconnect directory found
+"
+
+fi
+echo "#############################"
+echo "Status check: Prep Complete
+"
+echo "#############################"
+
+echo "
+"
+echo "#######################################
+"
+echo "Beginning the installation
+ "
+echo "attempting to mount dmg"
+/usr/bin/hdiutil attach "$waitRoom"/"$dmgName"
+echo "DMG mounted. About to call installer..."
+installer -pkg "/Volumes/AnyConnect 4.10.02086/AnyConnect.pkg" -applyChoiceChangesXML "/Volumes/AnyConnect 4.10.02086/choicesForAnyConnect.xml" -target /
+echo "Package installed, ejecting DMG"
+/usr/bin/hdiutil detach "/Volumes/AnyConnect 4.10.02086"
+echo "
+"
+echo "#######################################
+"
+echo "AnyConnect 4.10 installation is complete"
+echo "########################################"
+exit 0
