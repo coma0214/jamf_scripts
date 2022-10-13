@@ -1,0 +1,38 @@
+#!/bin/sh
+######################
+# Purpose of this script is to identify if dnscrypt-proxy is running and if not which cisco process are running as well as host and userinfo
+# contact collin_weir@rapid7.com for further questions
+######################
+
+# determine hostname
+HOSTNAME=$(hostname)
+# determine users on system
+USERS=$(dscl . list /Users | grep -v '_' | tr -s "\n" "," | sed '$s/,$/\n/')
+
+# Find the dns-crypt info
+DNSCRYPT=$(ps aux | grep dnscrypt | grep -Ev "grep" | grep -Ev "jamf"| tr -s " " "," | sed '$s/,$/\n/')
+# Find the cisco products on the host
+CISCOS=$(ps aux | grep cisco | grep -Ev "grep" | grep -Ev "jamf"| xargs -L1 | tr -s " " ",")
+# Run the System Extension list
+SYSEXLIST=$(systemextensionsctl list | tr -s " " ",")
+
+# print out the values received
+echo "----------------------------------------------------------------------------"
+echo $HOSTNAME
+echo "\n"
+echo $USERS
+echo "\n"
+if [ -z "$DNSCRYPT"  ]; then
+  echo "***DNSCRYPT NOT FOUND***"
+else
+  echo "$DNSCRYPT"
+fi
+echo "\n"
+#echo $CISCOS
+for x in $CISCOS; do
+  echo $x;
+done
+echo "\n"
+echo $SYSEXLIST
+echo "\n"
+echo "----------------------------------------------------------------------------"
