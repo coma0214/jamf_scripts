@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#Created for Samanage USA by Chris Greer 4/17
+#Helper Script for deployment using Jamf Pro v 9.98
+#Updated Install Path - Luis Amador 09-17-2019
+
+echo "Running Samanage agent install"
+
+# Install the SAManage Mac agent from /Library/Application Support/samanage copied by Casper
+echo "Running the installer"
+/private/tmp/r7samanage/Samanage_Agent_1.1.72_osx_installer.app/Contents/MacOS/installbuilder.sh --mode unattended
+
+# Clean-up
+# Remove the samanage files from /tmp
+/bin/rm -rf /private/tmp/r7samanage
+
+echo "Exiting with success"
+exit 0
