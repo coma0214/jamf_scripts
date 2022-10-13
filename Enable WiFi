@@ -1,0 +1,3 @@
+networksetup -setairportpower Wi-Fi On
+networksetup -setnetworkserviceenabled Wi-Fi On
+networksetup -setairportnetwork en1 Moose-Cast clockyellowroutejudge
