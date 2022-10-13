@@ -1,0 +1,113 @@
+#!/bin/bash
+##UPDATE dmgName FOR NEW VERSIONS OF ANYCONNECT##
+ciscoDir="/opt/cisco"
+## DMG Image name provided in script parameter 4
+## Installer Volume name in parameter 5
+## XML File name in parameter 6
+## OrgInfo name in paramater 7
+MyUser=$(ls -l /dev/console | cut -d " " -f4)
+dmgName=$4
+waitRoom="/Library/Application Support/JAMF/Waiting Room"
+echo "
+
+
+"
+
+echo "###########################"
+if [[ -d $ciscoDir/anyconnect/bin ]]; 
+then
+    echo "Anyconnect Directory found"
+    echo "Calling uninstall script"
+    sudo "$ciscoDir/anyconnect/bin/anyconnect_uninstall.sh"
+    echo "completed anydirect removal"
+else
+    echo "No $ciscoDir/anyconnect directory found"
+fi
+echo "
+"
+echo "##########################"
+echo "
+
+"
+echo "##########################"
+if [[ -d $ciscoDir/anyconnect/bin ]]; 
+then
+    echo "Found iseposture Module"
+    echo "Calling uninstall script iseposture"
+    sudo "$ciscoDir/anyconnect/bin/iseposture_uninstall.sh"
+    echo "completed iseposture removal"
+else
+    echo "Nothing found for iseposture plugin"
+fi
+echo "
+"
+
+echo "##########################
+"
+if [[ -d "$ciscoDir/anyconnect/bin" ]]; then
+    echo "Calling uninstall script for umbrella"
+    sudo "$ciscoDir/anyconnect/bin/umbrella_uninstall.sh"
+    echo "Script complete
+"
+else
+    echo "Nothing found for umbrella plugin"
+fi
+
+echo "##########################
+"
+if [[ -d "$ciscoDir/anyconnect/bin" ]]; then
+    echo "Calling uninstall script for dart"
+    sudo "$ciscoDir/anyconnect/bin/dart_uninstall.sh"
+    echo "Script complete
+"
+else
+    echo "Nothing found for Dart plugin"
+fi
+
+
+echo "##########################"
+
+#check for remnants of anyconnect directory"
+
+if [[ -d "$ciscoDir/anyconnect" ]]; then
+    rm -rf "$ciscoDir/anyconnect/"
+else
+    echo "no remnants of the anyconnect directory found
+"
+
+fi
+
+echo "##########################"
+
+#check for remnants of anyconnect install"
+
+echo "removing receipts files"
+rm -rf /private/var/db/receipts/anyconnect-4.10.*.bom
+rm -rf /private/var/db/receipts/anyconnect-4.10.*.plist
+echo "removing plist file"
+rm -rf "/Users/$MyUser/Library/Preferences/com.cisco.anyconnect.gui.plist"
+
+echo "#############################"
+echo "Status check: Prep Complete
+"
+echo "#############################"
+
+echo "
+"
+echo "#######################################
+"
+echo "########################################"
+echo "Beginning the installation"
+/usr/bin/hdiutil attach "$waitRoom"/"$dmgName" -nobrowse
+echo "########################################"
+installer -pkg "/Volumes/$5/AnyConnect.pkg" -applyChoiceChangesXML "/Volumes/$5/$6" -target /
+echo "Package installed"
+echo "#############################"
+cp -R "/Volumes/$5/$7" "/opt/cisco/anyconnect/umbrella"
+echo "Moved OrgInfo.json"
+echo "########################################"
+/usr/bin/hdiutil detach "/Volumes/$5"
+echo "########################################"
+echo "AnyConnect 4.10 installation is complete"
+echo "########################################"
+exit 0
