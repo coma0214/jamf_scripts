@@ -1,0 +1,8 @@
+#!/bin/bash
+# Disable Remote Login
+#Approved by wkuang, jfrantz, lamador
+#6-26-2020
+
+yes yes | systemsetup -setremotelogin off
+
+exit 0
