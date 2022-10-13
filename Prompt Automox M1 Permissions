@@ -1,0 +1,7 @@
+#!/bin/bash
+
+sudo /usr/local/bin/amagent --automox-service-account enable
+
+sleep 2
+
+sudo /usr/local/bin/amagent --automox-user-prompt enable 
