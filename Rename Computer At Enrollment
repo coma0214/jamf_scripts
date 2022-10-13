@@ -1,0 +1,67 @@
+#!/bin/bash
+
+CSV_PATH='/var/tmp/computernames.csv'
+
+# Downloads a remote CSV file to CSV_PATH
+function download_csv() {
+# -s flag to turn off curl's output
+# -f flag to have catchable exit status
+# -L for url link
+# -o for output to filename
+# double quotes around CSV_URL becuase curl prefers the url in quotes
+curl -s -f -L -o "$CSV_PATH" ""$CSV_URL""
+CURL_STATUS=$?
+
+echo "waiting 10 seconds"
+sleep 10
+echo "finished waiting"
+
+if [[ $CURL_STATUS -eq 0 ]]; then
+echo "Successfully downloaded $CSV_URL to $CSV_PATH"
+elif [[ $CURL_STATUS -eq 3 ]]; then
+# File I/O error
+echo "ERROR: Unable to write file at $CSV_PATH"
+exit 1
+else
+# Download error
+echo "ERROR: Unable to open URL at $CSV_URL"
+exit 1
+fi
+}
+
+# Renames a computer using the Jamf binary and local CSV at CSV_PATH
+function rename_computer() {
+JAMF_MESSAGE=$(sudo /usr/local/bin/jamf setComputerName -fromFile "$CSV_PATH")
+JAMF_STATUS=$?
+echo $JAMF_STATUS
+echo $JAMF_MESSAGE
+if [[ JAMF_STATUS -eq 0 ]]; then
+RENAME=$(echo $JAMF_MESSAGE | awk 'END{print $NF}')
+echo $RENAME
+if [[ -n RENAME ]]; then
+# on success the jamf binary reports 'Set Computer Name to XXX'
+# so we split the phrase and return the last element
+echo "SUCCESS: Set computer name to $RENAME"
+else
+echo "ERROR: Unable to set computer name. Is this device in the remote CSV file?"
+exit 1
+fi
+else
+echo "ERROR: Unable to set computer name without local CSV file."
+exit 1
+fi
+
+}
+
+if [[ -z $4 ]]; then
+echo 'ERROR: You must provide the URL of a remote CSV file.'
+exit 1
+fi
+
+CSV_URL=$4
+
+#call download_csv
+download_csv
+
+#call rename_computer
+rename_computer
