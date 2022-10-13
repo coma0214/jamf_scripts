@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sudo defaults delete "/Library/Preferences/us.zoom.config.plist ZAutoFullScreenWhenViewShare"
+sudo defaults delete "/Library/Preferences/us.zoom.config.plist ZAutoFitWhenViewShare"
